@@ -1,0 +1,484 @@
+body {
+  color: #606c5d;
+  font-family: "Open Sans", sans-serif;
+  /* height: 100vh; */
+  /* background-color: #fff4f4; */
+}
+main {
+  margin-bottom: 15px;
+}
+a {
+  text-decoration: none;
+  color: #444d42;
+}
+a:hover {
+  color: #444d42;
+}
+input[type="submit"] {
+  background-color: white;
+}
+input[type="submit"]:hover {
+  background-color: #f0f0f0;
+}
+.main-container {
+  /* background-color: white; */
+
+  border: 1px rgb(172, 172, 172) solid;
+  border-radius: 10px;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+
+  max-width: 900px;
+  padding: 20px;
+}
+.todo-add {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin: 0 0 20px 0;
+}
+.todo-add input {
+  border: 1px rgb(172, 172, 172) solid;
+  border-radius: 10px;
+  height: 40px;
+}
+
+.todo-add input[type="text"] {
+  width: 60%;
+}
+.todo-add input[type="submit"] {
+  width: 19%;
+}
+.todo-add input[type="datetime-local"] {
+  width: 19%;
+  border: 1px rgb(172, 172, 172) solid;
+}
+.todo-card {
+  border: 1px rgb(172, 172, 172) solid;
+  background-color: white;
+  width: 100%;
+  border-radius: 10px;
+  padding: 15px 15px;
+  position: relative;
+  margin-bottom: 15px;
+}
+.todo-card p {
+  width: 100%;
+  display: inline-block;
+
+  /* overflow: hidden; */
+}
+.until-div {
+  position: relative;
+  display: inline-block;
+  width: 15%;
+  position: absolute;
+  right: 110px;
+}
+.until-div button {
+  border: 1px rgb(172, 172, 172) solid;
+  background-color: white;
+  border-radius: 5px;
+  width: 155px;
+  height: 30px;
+  margin-left: 15px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.until-div button:hover {
+  background-color: #f0f0f0;
+}
+.until-div button i {
+  position: absolute;
+  right: 10px;
+}
+
+.todo-until {
+  position: absolute;
+  display: inline-block;
+  top: 30px;
+  left: 15px;
+  width: 155px;
+  overflow-wrap: break-word;
+  border: 1px rgb(172, 172, 172) solid;
+  background-color: white;
+  border-radius: 5px;
+  z-index: 9999;
+  padding: 5px;
+}
+.btn-dr {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  right: 15px;
+  width: 30px;
+  height: 30px;
+  margin: auto;
+  border: 1px rgb(172, 172, 172) solid;
+  background-color: white;
+  border-radius: 5px;
+  color: black;
+  text-decoration: none;
+  text-align: center;
+}
+.btn-dr:hover {
+  background-color: #f0f0f0;
+}
+/* .todo-card a:hover {
+  color: azure;
+  background-color: rgb(102, 102, 102);
+} */
+input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+}
+.options {
+  border: 1px rgb(172, 172, 172) solid;
+  display: inline-block;
+
+  background-color: white;
+  border-radius: 5px;
+  z-index: 9999;
+  padding: 5px;
+  width: 100px;
+  position: absolute;
+  top: 30px;
+  right: 15px;
+}
+.options span {
+  display: block;
+  padding: 5px 10px;
+  margin: 0 auto;
+  width: 100%;
+  border: 1px rgb(172, 172, 172) solid;
+  background-color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.options span:hover {
+  background-color: #fff4f4;
+}
+
+.options span:not(:first-child) {
+  margin-top: 5px;
+}
+@media only screen and (max-width: 900px) {
+  .until-div {
+    right: 160px;
+
+    /* display: none; */
+  }
+}
+
+.testo {
+  height: 45px;
+  position: relative;
+  /* center checkbox horizontally */
+  vertical-align: middle;
+}
+
+.nav-background {
+  height: 60px;
+  border-bottom: 1px rgb(172, 172, 172) solid;
+  background-color: white;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  /* max-width: 1100px; */
+  margin-left: auto;
+  margin-right: auto;
+  /* background-color: transparent; */
+}
+.nav-bar {
+  max-width: 75%;
+  min-width: 1000px;
+  /* background-color: #c4bfbf; */
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  position: relative;
+}
+
+.nav-logo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  left: 10%;
+}
+.nav-logo img {
+  /* background-color: blueviolet; */
+  height: 40px;
+  width: auto;
+  /* width: 50px; */
+  /* margin-left: 10%; */
+  /* position: absolute; */
+}
+.nav-links {
+  width: 100%;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  margin-right: 10%;
+}
+.nav-links a {
+  font-weight: bold;
+  /* background-color: rgb(182, 182, 182); */
+
+  color: rgb(52, 83, 83);
+
+  /* padding: 5px 10px; */
+  border-radius: 10px;
+}
+.nav-links a:hover {
+  color: #0a6ebd;
+}
+
+.nav-links a:not(:last-child) {
+  margin-right: 30px;
+}
+/* .nav-links a:first {
+  margin-right: 0;
+} */
+@media only screen and (max-width: 1000px) {
+  .nav-bar {
+    min-width: 100%;
+    max-width: 100%;
+  }
+  .nav-logo {
+    left: 20px;
+  }
+}
+.diff-links-container {
+  position: absolute;
+  min-width: 190px;
+  max-width: 190px;
+  border: 1px rgb(172, 172, 172) solid;
+  border-radius: 10px;
+  padding: 10px;
+  background-color: white;
+  left: -210px;
+
+  top: 0;
+}
+
+.diff-links {
+  width: 100%;
+}
+.diff-links-section {
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: overlay;
+  max-height: 70vh;
+}
+
+/* Webkit browsers (Chrome, Safari) */
+.diff-links-section::-webkit-scrollbar {
+  width: 8px; /* Increase the width to make the scrollbar visible */
+}
+
+.diff-links-section::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 5px;
+}
+
+.diff-links-section::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+  border-radius: 5px;
+}
+
+.diff-links-section::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+  border-radius: 5px;
+}
+.diff-links div {
+  display: flex;
+  text-align: center;
+  padding-bottom: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.diff-links a {
+  max-width: 128px;
+  border: 1px rgb(172, 172, 172) solid;
+  border-radius: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  display: inline;
+  min-width: 128px;
+}
+.diff-links a:hover {
+  background-color: #f0f0f0;
+}
+
+.diff-links a:not(:first-child) {
+  padding-top: 10px;
+}
+#linkContainer {
+  display: block;
+}
+.input-f {
+  width: 100%;
+  border: 1px rgb(172, 172, 172) solid;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+#linkContainer button {
+  width: 100%;
+  border: 1px rgb(172, 172, 172) solid;
+  border-radius: 10px;
+  background-color: white;
+}
+#linkContainer input {
+}
+#linkContainer button:hover {
+  background-color: #f0f0f0;
+}
+
+.username {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  align-self: center;
+  margin: 0;
+}
+
+@media only screen and (max-width: 1338px) {
+  .diff-links-container {
+    display: none;
+  }
+}
+#status-links {
+  margin-top: 20px;
+}
+#status-links a {
+  border: 1px rgb(172, 172, 172) solid;
+  border-radius: 10px;
+  padding: 5px 10px;
+  background-color: white;
+}
+
+#status-links a:hover {
+  background-color: #f0f0f0;
+}
+.diff-link-btn {
+  border: 1px rgb(172, 172, 172) solid;
+  border-radius: 10px;
+  width: 100%;
+  background-color: white;
+  /* margin-bottom: 10px; */
+}
+.diff-link-btn:hover {
+  background-color: #f0f0f0;
+}
+.diff-link-btn h4 {
+  padding: 5px 5px 5px 5px;
+  margin: 0;
+  position: relative;
+}
+.diff-link-btn h4 #foldersIcon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-40%);
+}
+.diff-link-btn h4 #foldersIcon2 {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+#folders {
+  margin-top: 20px;
+}
+
+.folders-active {
+  opacity: 0;
+  display: none;
+}
+
+.m-btn {
+  background-color: white;
+
+  width: 100%;
+  border-radius: 10px;
+  border: 1px rgb(172, 172, 172) solid;
+}
+.m-btn:hover {
+  background-color: #f0f0f0;
+}
+
+#filterDivDown {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+#filterDivUp {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-45%);
+}
+
+@media only screen and (min-width: 1338px) {
+  #mobDiv {
+    display: none;
+  }
+}
+
+.diff-links-section-mob {
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: overlay;
+  max-height: 70vh;
+}
+
+/* Webkit browsers (Chrome, Safari) */
+.diff-links-section-mob::-webkit-scrollbar {
+  width: 8px; /* Increase the width to make the scrollbar visible */
+}
+
+.diff-links-section-mob::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 5px;
+}
+
+.diff-links-section-mob::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+  border-radius: 5px;
+}
+
+.diff-links-section-mob::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+  border-radius: 5px;
+}
+
+.diff-links-section-mob a {
+  width: 90%;
+  border: 1px rgb(172, 172, 172) solid;
+  border-radius: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  display: inline;
+}
+.diff-links-section-mob a:hover {
+  background-color: #f0f0f0;
+}
+
+.diff-links-section-mob a:not(:first-child) {
+  padding-top: 10px;
+}
+.diff-links-section-mob div {
+  display: flex;
+  text-align: center;
+  padding-bottom: 10px;
+  justify-content: center;
+  align-items: center;
+}
+#mob-folders {
+  margin-top: 20px !important;
+}

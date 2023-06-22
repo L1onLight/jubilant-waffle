@@ -1,0 +1,374 @@
+{% extends "main.html" %} {% block content %} {% load static %}
+<input type="hidden" id="foldersHidden" />
+<section class="container main-container mt-2 mb-3 shadow position-relative">
+  <button class="m-btn position-relative" id="filterBtn">
+    Filter
+    <i class="fa-solid fa-caret-up ms-2" id="filterDivUp" style="display: "></i>
+    <i
+      class="fa-solid fa-caret-down ms-2"
+      id="filterDivDown"
+      style="display: none"
+    ></i>
+  </button>
+  <section id="filterContainer" style="display: none">
+    <div class="d-flex justify-content-between mb-3" id="status-links">
+      <a href="">Completed</a>
+      <a href="">Uncompleted</a>
+      <a href="">Deleted</a>
+    </div>
+    <input
+      type="text"
+      class="input-f"
+      id="filterInputTasks"
+      placeholder="Filter tasks"
+    />
+  </section>
+</section>
+
+<section
+  class="container main-container mt-2 mb-3 shadow position-relative"
+  id="mobDiv"
+>
+  <button class="m-btn position-relative" id="foldersMobBtn">
+    Folders
+    <i
+      class="fa-solid fa-caret-up ms-2"
+      id="foldersIconUpMob"
+      style="display: "
+    ></i>
+    <i
+      class="fa-solid fa-caret-down ms-2"
+      id="foldersIconDownMob"
+      style="display: none"
+    ></i>
+  </button>
+  <section id="mob-folders" style="display: none">
+    <input
+      type="text"
+      class="input-f"
+      id="filterInputMob"
+      placeholder="Filter folders"
+    />
+    <section class="diff-links-section-mob" id="divContainerMob">
+      <div>
+        <a href="" class="filterItem">Something</a>
+      </div>
+      <div>
+        <a href="" class="filterItem">New</a>
+      </div>
+      <div>
+        <a href="" class="filterItem">Work</a>
+      </div>
+      <div>
+        <a href="" class="filterItem">Home</a>
+      </div>
+      <div>
+        <a href="" class="filterItem">Shop</a>
+      </div>
+      <div id="linkContainer">
+        <input type="text" class="input-f" placeholder="Create Folder" />
+        <button>Add</button>
+      </div>
+    </section>
+  </section>
+</section>
+
+<section class="container main-container mt-2 mb-2 shadow position-relative">
+  <div class="diff-links-container shadow">
+    <div class="diff-links">
+      <button class="diff-link-btn" id="folderBtn">
+        <h4 class="text-center">
+          Folders
+          <i
+            class="fa-solid fa-caret-up ms-2"
+            id="foldersIcon"
+            style="display: "
+          ></i>
+
+          <i
+            class="fa-solid fa-caret-down ms-2"
+            id="foldersIcon2"
+            style="display: none"
+          ></i>
+        </h4>
+      </button>
+      <section id="folders" tabindex="0" class="folders-active">
+        <input
+          type="text"
+          class="input-f"
+          id="filterInput"
+          placeholder="Filter folders"
+        />
+
+        <section class="diff-links-section" id="divContainer">
+          <div>
+            <a href="" class="filterItem">Something</a>
+          </div>
+          <div>
+            <a href="" class="filterItem">New</a>
+          </div>
+          <div>
+            <a href="" class="filterItem">Work</a>
+          </div>
+          <div>
+            <a href="" class="filterItem">Home</a>
+          </div>
+          <div>
+            <a href="" class="filterItem">Shop</a>
+          </div>
+        </section>
+
+        <div id="linkContainer">
+          <input type="text" class="input-f" placeholder="Create Folder" />
+          <button>Add</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <h3 class="text-center mb-4">All Plans</h3>
+  <div class="todo-add">
+    <input type="text" name="todo-input" />
+    <input type="datetime-local" id="dtLoc" value="" min="" />
+    <input type="submit" value="Add" />
+  </div>
+  <section id="itemContainer">
+    <section id="paginationContainer">
+      <div class="todo-card">
+        <div class="testo">
+          <input type="checkbox" name="" id="checkbox-id" />
+          <label for="checkbox-id">Completed</label>
+          <div class="until-div">
+            <button class="position-relative" onclick="untilDropdown(this)">
+              Until<i class="fa-solid fa-caret-down mx-2"></i>
+            </button>
+            <div class="todo-until shadow" style="display: none">
+              January 28, 2009<br />
+              12:33 PM<br /><br />
+              Time Left: <br />
+              2020 seconds
+            </div>
+          </div>
+          <div class="">
+            <button class="btn-dr" onclick="untilDropdown(this)">
+              <i class="fa-solid fa-ellipsis-vertical fa-lg"></i>
+            </button>
+            <div class="options shadow" style="display: none">
+              <span><a href="">Edit</a></span>
+              <span><a href="">Edit</a></span>
+              <span><a href="">Edit</a></span>
+            </div>
+          </div>
+        </div>
+        <p class="my-auto">
+          Innovative device enhances user experience for better productivity.
+        </p>
+      </div>
+      <div class="todo-card">
+        <div class="testo">
+          <input type="checkbox" class="my-auto" name="" id="checkbox-id" />
+          <label for="checkbox-id" style="text-align: center">Completed</label>
+          <div class="until-div">
+            <button class="position-relative" onclick="untilDropdown(this)">
+              Until<i class="fa-solid fa-caret-down mx-2"></i>
+            </button>
+            <div class="todo-until shadow" style="display: none">
+              January 28, 2009<br />
+              12:33 PM<br /><br />
+              Time Left: <br />
+              2020 seconds
+            </div>
+          </div>
+          <div class="">
+            <button class="btn-dr" onclick="untilDropdown(this)">
+              <i class="fa-solid fa-ellipsis-vertical fa-lg"></i>
+            </button>
+            <div class="options shadow" style="display: none">
+              <span><a href="">Edit</a></span>
+              <span><a href="">Edit</a></span>
+              <span><a href="">Edit</a></span>
+            </div>
+          </div>
+        </div>
+        <p class="my-auto">
+          Athletes from around the world gather to compete in the thrilling
+          championship event.
+        </p>
+      </div>
+      <div class="todo-card">
+        <div class="testo">
+          <input type="checkbox" class="my-auto" name="" id="checkbox-id" />
+          <label for="checkbox-id" style="text-align: center">Completed</label>
+          <div class="until-div">
+            <button class="position-relative" onclick="untilDropdown(this)">
+              Until<i class="fa-solid fa-caret-down mx-2"></i>
+            </button>
+            <div class="todo-until shadow" style="display: none">
+              January 28, 2009<br />
+              12:33 PM<br /><br />
+              Time Left: <br />
+              2020 seconds
+            </div>
+          </div>
+          <div class="">
+            <button class="btn-dr" onclick="untilDropdown(this)">
+              <i class="fa-solid fa-ellipsis-vertical fa-lg"></i>
+            </button>
+            <div class="options shadow" style="display: none">
+              <span><a href="">Edit</a></span>
+              <span><a href="">Edit</a></span>
+              <span><a href="">Edit</a></span>
+            </div>
+          </div>
+        </div>
+        <p class="my-auto">
+          Lush green forests, serene lakes, and majestic mountains offer a
+          breathtaking escape into nature's beauty.
+        </p>
+      </div>
+      <div class="todo-card">
+        <div class="testo">
+          <input type="checkbox" class="my-auto" name="" id="checkbox-id" />
+          <label for="checkbox-id" style="text-align: center">Completed</label>
+          <div class="until-div">
+            <button class="position-relative" onclick="untilDropdown(this)">
+              Until<i class="fa-solid fa-caret-down mx-2"></i>
+            </button>
+            <div class="todo-until shadow" style="display: none">
+              January 28, 2009<br />
+              12:33 PM<br /><br />
+              Time Left: <br />
+              2020 seconds
+            </div>
+          </div>
+          <div class="">
+            <button class="btn-dr" onclick="untilDropdown(this)">
+              <i class="fa-solid fa-ellipsis-vertical fa-lg"></i>
+            </button>
+            <div class="options shadow" style="display: none">
+              <span><a href="">Edit</a></span>
+              <span><a href="">Edit</a></span>
+              <span><a href="">Edit</a></span>
+            </div>
+          </div>
+        </div>
+        <p class="my-auto">
+          "Savor the exquisite flavors of culinary delights, carefully crafted
+          with the finest ingredients and culinary expertise.
+        </p>
+      </div>
+      <div class="todo-card">
+        <div class="testo">
+          <input type="checkbox" class="my-auto" name="" id="checkbox-id" />
+          <label for="checkbox-id" style="text-align: center">Completed</label>
+          <div class="until-div">
+            <button class="position-relative" onclick="untilDropdown(this)">
+              Until<i class="fa-solid fa-caret-down mx-2"></i>
+            </button>
+            <div class="todo-until shadow" style="display: none">
+              January 28, 2009<br />
+              12:33 PM<br /><br />
+              Time Left: <br />
+              2020 seconds
+            </div>
+          </div>
+          <div class="">
+            <button class="btn-dr" onclick="untilDropdown(this)">
+              <i class="fa-solid fa-ellipsis-vertical fa-lg"></i>
+            </button>
+            <div class="options shadow" style="display: none">
+              <span><a href="">Edit</a></span>
+              <span><a href="">Edit</a></span>
+              <span><a href="">Edit</a></span>
+            </div>
+          </div>
+        </div>
+        <p class="my-auto">
+          Embark on a captivating journey to discover hidden gems, vibrant
+          cultures, and stunning landscapes in far-flung destinations across the
+          globe.
+        </p>
+      </div>
+      <div class="todo-card">
+        <div class="testo">
+          <input type="checkbox" class="my-auto" name="" id="checkbox-id" />
+          <label for="checkbox-id" style="text-align: center">Completed</label>
+          <div class="until-div">
+            <button class="position-relative" onclick="untilDropdown(this)">
+              Until<i class="fa-solid fa-caret-down mx-2"></i>
+            </button>
+            <div class="todo-until shadow" style="display: none">
+              January 28, 2009<br />
+              12:33 PM<br /><br />
+              Time Left: <br />
+              2020 seconds
+            </div>
+          </div>
+          <div class="">
+            <button class="btn-dr" onclick="untilDropdown(this)">
+              <i class="fa-solid fa-ellipsis-vertical fa-lg"></i>
+            </button>
+            <div class="options shadow" style="display: none">
+              <span><a href="">Edit</a></span>
+              <span><a href="">Edit</a></span>
+              <span><a href="">Edit</a></span>
+            </div>
+          </div>
+        </div>
+        <p class="my-auto">
+          Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+          accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae
+          ab illo inventore veritatis et quasi architecto beatae vitae dicta
+          sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit
+          aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos
+          qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui
+          dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed
+          quia non numquam eius modi tempora incidunt ut labore et dolore magnam
+          aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum
+          exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex
+        </p>
+      </div>
+      <div class="todo-card">
+        <div class="testo">
+          <input type="checkbox" class="my-auto" name="" id="checkbox-id" />
+          <label for="checkbox-id" style="text-align: center">Completed</label>
+          <div class="until-div">
+            <button class="position-relative" onclick="untilDropdown(this)">
+              Until<i class="fa-solid fa-caret-down mx-2"></i>
+            </button>
+            <div class="todo-until shadow" style="display: none">
+              January 28, 2009<br />
+              12:33 PM<br /><br />
+              Time Left: <br />
+              2020 seconds
+            </div>
+          </div>
+          <div class="">
+            <button class="btn-dr" onclick="untilDropdown(this)">
+              <i class="fa-solid fa-ellipsis-vertical fa-lg"></i>
+            </button>
+            <div class="options shadow" style="display: none">
+              <span><a href="">Edit</a></span>
+              <span><a href="">Edit</a></span>
+              <span><a href="">Edit</a></span>
+            </div>
+          </div>
+        </div>
+        <p class="my-auto">
+          Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+          accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae
+          ab illo inventore veritatis et quasi architecto beatae vitae dicta
+          sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit
+          aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos
+          qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui
+          dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed
+          quia non numquam eius modi tempora incidunt ut labore et dolore magnam
+          aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum
+          exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex
+        </p>
+      </div>
+    </section>
+  </section>
+</section>
+
+{% endblock content %}
