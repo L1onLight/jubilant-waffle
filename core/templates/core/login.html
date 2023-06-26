@@ -1,0 +1,88 @@
+{% extends 'main.html' %}
+{% block content %}
+  {% load static %}
+  <section class="login-container shadow">
+    <section id="loginForm">
+      <form action="" method="post">
+        {% csrf_token %}
+        <div class="login-div">
+          <span>Don't have an account? <button id="regBtn" class="h-btn">Sign Up</button></span>
+          <br />
+
+          <h4>Login</h4>
+          <div class="sm">
+            <label for="username-login" class="i-div"><i class="fa-solid fa-circle-user fa-xl"></i></label>
+            {{form.username}}
+          </div>
+
+          <div class="sm">
+            <label for="password-login" class="i-div"><i class="fa-solid fa-key fa-flip-horizontal fa-xl"></i></label>
+            {{form.password}}
+          </div>
+          <div id="error-div-log">
+            {% if login_errors %}
+            <span>{{login_errors}}</span>
+            {% endif %}
+          </div>
+
+          <button type="submit" class="continue-btn mx-auto">Continue</button>
+        </div>
+        <span>Forgot your <a href="">password</a>?</span>
+        <div class="text-center mt-3">
+        Example User:<br>
+        Email: example@gmail.com <br>  
+        Username: Useriko <br> 
+        Password: qwerty123 <br> 
+        </div>
+      </form>
+    </section>
+    <!-- register form -->
+    <section id="registerForm"  class="hidden">
+      <form action="" method="post">
+        {% csrf_token %}
+        <div class="login-div">
+          <span>Already have an account? <button id="logBtn" class="h-btn">Log In</button></span>
+          <br />
+
+          <h4>Register</h4>
+          <div class="sm">
+            <label for="id_email" class="i-div"><i class="fa-solid fa-envelope fa-xl"></i></label>
+            {{ reg_form.email }}
+          </div>
+          <div class="sm">
+            <label for="login" class="i-div"><i class="fa-solid fa-circle-user fa-xl"></i></label>
+            {{ reg_form.username }}
+          </div>
+          <div class="sm">
+            <label for="password" class="i-div"><i class="fa-solid fa-key fa-flip-horizontal fa-xl"></i></label>
+            {{ reg_form.password }}
+          </div>
+          <div class="sm">
+            <label for="password_rep" class="i-div"><i class="fa-solid fa-key fa-flip-horizontal fa-xl"></i></label>
+            {% comment %} <input type="password" id="password-rep" placeholder="Repeat Password" /> {% endcomment %}
+            {{ reg_form.password_rep }}
+
+          </div>
+          <div id="error-div-reg">
+            {% if reg_errors %}
+            <span>{{reg_errors}}</span>
+            {% endif %}
+            {% if messages %}
+            {% for message in messages %}
+            {{message}}
+            {% endfor %}
+            {% endif %}
+          </div>
+
+          <div id="error-div">
+            
+          </div>
+
+          <button class="mx-auto continue-btn">Register</button>
+        </div>
+        
+      </form>
+    </section>
+  </section>
+  <script src="{% static 'js/log.js' %}"></script>
+{% endblock %}

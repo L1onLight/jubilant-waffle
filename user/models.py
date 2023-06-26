@@ -6,6 +6,8 @@ from .managers import CustomUserManager
 
 
 class CustomUser(AbstractUser):
+    """Requires email and password, username can be blank"""
+
     # username = None
     email = models.EmailField(_("email address"), unique=True)
     username = models.CharField(

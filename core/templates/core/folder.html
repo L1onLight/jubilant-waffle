@@ -1,11 +1,6 @@
 {% extends "main.html" %}
 {% block content %}
     {% load static %}
-    {% comment %} <div class="confirmation shadow">
-        <h4>Are you sure you want to delete <span>this?</span></h4>
-<div><button>Confirm</button> <button>Cancel</button></div>
-    </div> {% endcomment %}
-
     <input type="hidden" id="foldersHidden" />
     <section class="container main-container mt-2 mb-3 shadow position-relative">
         <button class="m-btn position-relative" id="filterBtn">
@@ -16,7 +11,7 @@
                style="display: none"></i>
         </button>
         <section id="filterContainer" style="display: none">
-            <div class="d-flex justify-content-between mb-3 w-50 mx-auto" id="status-links">
+            <div class="d-flex justify-content-between mb-3 w-100 mx-auto" id="status-links">
                 <a href="?completed">Completed</a>
                 <a href="?">All</a>
                 <a href="?uncompleted">Uncompleted</a>
@@ -79,12 +74,12 @@
                            id="filterInput"
                            placeholder="Filter folders" />
                     <section class="diff-links-section" id="divContainer">
-                         {% for folder in  todo_folders %}
-                         <div class="position-relative">
-                            <a href="{% url 'folder_page' folder_name=folder %}" id="folder_{{folder.id}}" class="filterItem">{{ folder }}</a>
-                            <div class="removeFolder"><i class="fa-solid fa-xmark"></i></div>
-                        </div>
-                        {% endfor %}
+                        {% for folder in  todo_folders %}
+                        <div class="position-relative">
+                           <a href="{% url 'folder_page' folder_name=folder %}" id="folder_{{folder.id}}" class="filterItem">{{ folder }}</a>
+                           <div class="removeFolder"><i class="fa-solid fa-xmark"></i></div>
+                       </div>
+                       {% endfor %}
                     </section>
                     <div id="linkContainer">
                         <input type="text"
@@ -92,14 +87,14 @@
                                name="folderTitle"
                                id="folderCreateInput2"
                                placeholder="Create Folder" />
-                        <button id="addFolderBtn2" onclick="addFolderFunction(this)">Add</button>
+                        <button id="addFolderBtn2" onclick="addFolderFunction(this)" disabled>Add</button>
                         <input type="hidden" id="hFolderInput" />
                     </div>
                 </section>
             </div>
         </div>
-        <h3 class="text-center mb-4">All Plans</h3>
-        <form action="{% url 'addPost' %}" method="POST" id="addTodoForm">
+        <h3 class="text-center mb-4">{{folder_name}} plans</h3>
+        <form action="{% url 'addTodoInfolder' folder_name=folder_name %}" method="POST" id="addTodoForm">
             {% csrf_token %}
             <div class="todo-add">
                 <input type="text" name="todoInput" class="todo-add-text" required />
@@ -139,7 +134,7 @@
                                         </div>
                                     </div>
                                 {% endif %}
-                                <div class="">
+                                <div class="{{todo.id}}">
                                     <button class="btn-dr" onclick="untilDropdown(this)">
                                         <i class="fa-solid fa-ellipsis-vertical fa-lg"></i>
                                     </button>
@@ -156,52 +151,21 @@
                 </section>
             </section>
         </section>
-        
-        {% if paginator.count > pn %}
-        <div class="text-center">
-            <nav aria-label="Page navigation example">
-                <ul class="pagination justify-content-center">
-
-
-                    {% if todo_list.has_previous %}
-                        <li class="page-item"><a class="page-link mainBlue-text"
-                                                 href="{% if "?completed" in request %}{% endif %} ?page=1"
-                                                 tabindex="-1">&laquo; First</a></li>
-                        <li class="page-item"><a class="page-link mainBlue-text"
-                                                 href="?page={{ todo_list.previous_page_number }}">{{ todo_list.previous_page_number }}</a>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled"><a class="page-link"
-                                                          href=""
-                                                          tabindex="-1"
-                                                          aria-disabled="true">&laquo; First</a></li>
-                    {% endif %}
-                    <li class="page-item">
-                        <a class="page-link my-active" href="?page={{ todo_list.number }}">{{ todo_list.number }}</a>
-                    </li>
-
-                    {% if todo_list.has_next %}
-                        <li class="page-item">
-                            <a class="page-link mainBlue-text"
-                               href="?page={{ todo_list.next_page_number }}">
-                                {{ todo_list.next_page_number }}</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link mainBlue-text"
-                               href="?page={{ paginator.num_pages }}">Last &raquo;</a>
-                        </li>
-
-
-                    {% else %}
-                        <li class="page-item disabled">
-                            <a class="page-link mainBlue-text" aria-disabled="true" href="">Last &raquo;</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
-        </div>
-    {% endif %}
-
-
 <script src="{% static 'js/main.js' %}"></script>
-    {% endblock content %}
+
+
+{% comment %} <form action="" method="POST">
+    {% csrf_token %}
+    <div class="editTodoContainer">
+        <div class="textTodoContainer">
+            <div class="closeDiv"><i class="fa-solid fa-xmark"></i></div>
+            <textarea name="editTodo" id="" cols="30" rows="10"></textarea>
+            <input type="hidden" name="id">
+            <div class="btnIn">
+                <button>Save</button>
+            </div>
+        </div>
+    </div>
+</form> {% endcomment %}
+
+{% endblock content %}
