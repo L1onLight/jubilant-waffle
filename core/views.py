@@ -8,6 +8,12 @@ from .models import CustomUser
 from django.http import QueryDict
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import make_password
+from notifications.models import PasswordRestore
+from django.utils import timezone
+from datetime import datetime, timedelta
+from django.contrib import auth
+import random
+from notifications.views import password_restore_email
 # Pagination
 from django.core.paginator import Paginator
 
@@ -54,7 +60,7 @@ def folder_page(request, folder_name):
 
 
 @logout_required
-def log_in(request):
+def log_in(request, fool=None):
     form = CustomLoginForm()
     reg_form = RegisterForm()
 
@@ -115,3 +121,63 @@ def create_example_user(request):
     except Exception:
         pass
     return redirect('home')
+
+
+def restore_mail(request):
+
+    if request.method == 'POST' and request.POST.get('restoreCode'):
+        r_email = request.POST.get('restoreEmail')
+        r_code = request.POST.get('restoreCode')
+        r_password = request.POST.get('restorePassword')
+        try:
+            pr = PasswordRestore.objects.get(user__email=r_email)
+            current_datetime = timezone.now()
+            model_datetime = pr.created_or_changed
+            if current_datetime > model_datetime + timedelta(minutes=1):
+                pr.delete()
+                messages.error(request, 'Code expired.')
+            else:
+                if r_code == str(pr.restoreCode):
+                    user = CustomUser.objects.get(email=r_email)
+                    user.password = make_password(r_password)
+                    user.save()
+                    auth.login(request, user=user)
+                    return redirect('home')
+                else:
+                    messages.error(request, 'Wrong code.')
+        except PasswordRestore.DoesNotExist:
+            messages.error(request, 'Wrong code.')
+            pass
+
+    if request.method == 'POST' and '?code' not in request.build_absolute_uri():
+        email_ = request.POST.get('email')
+        print(email_)
+
+        try:
+            user = CustomUser.objects.get(email=email_)
+            code = random.randrange(1000000, 10000000)
+
+            try:
+                pr = PasswordRestore.objects.get(user=user)
+                pr.restoreCode = code
+                pr.save()
+            except Exception as e:
+                print(e)
+                # pr = PasswordRestore.objects.create(user=user, restoreCode=code)
+                pr = PasswordRestore(user=user, restoreCode=code)
+                pr.save()
+            # pr, created = PasswordRestore.objects.get_or_create(user=user)
+            # pr.restoreCode = code
+            # pr.save()
+            print(f"Code: {code}")
+            password_restore_email(
+                request, receiver_email=email_, code=code, url=request.build_absolute_uri('?code'))
+
+            # p_restore(email_, code)
+            messages.success(request, 'Check your email.')
+
+        except CustomUser.DoesNotExist:
+            # Here you can change error message to check your email if
+            # you want to hide information about email from user.
+            messages.error(request, 'User does not exist.')
+    return render(request, 'core/password_restore.html')
