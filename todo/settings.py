@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+import django_on_heroku
 from django.conf import settings
 import os.path
 from pathlib import Path
@@ -167,9 +168,5 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 email_system_password = os.environ.get('EMAIL_SYSTEM_PASSWORD')
 
-if email_system_password:
-    # Use the email_system_password variable here
-    print(email_system_password)
-else:
-    # Handle the case when the environment variable is not set
-    print("EMAIL_SYSTEM_PASSWORD is not set.")
+
+django_on_heroku.settings(locals())
