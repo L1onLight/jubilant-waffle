@@ -280,7 +280,6 @@ pyrightconfig.json
 .history
 .ionide
 
-# Django DB
-db.sqlite3
 
-# End of https://www.toptal.com/developers/gitignore/api/python,pycharm+all,visualstudiocode
+requirements.txt.old
+*.old

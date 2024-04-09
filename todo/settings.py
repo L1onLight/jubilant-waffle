@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-import django_on_heroku
 from django.conf import settings
 import os.path
 from pathlib import Path
@@ -169,4 +168,3 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 email_system_password = os.environ.get('EMAIL_SYSTEM_PASSWORD')
 
 
-django_on_heroku.settings(locals())
