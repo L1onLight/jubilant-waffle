@@ -34,7 +34,6 @@ def home(request):
     p = Paginator(todo_list, PAGINATION_N)
     page = request.GET.get('page')
     todo_list = p.get_page(page)
-    print(p.count)
     context = {'todo_list': todo_list, "todo_folders": todo_folders, "paginator": p,
                'pn': PAGINATION_N}
     return render(request, 'core/index.html', context)
@@ -42,7 +41,6 @@ def home(request):
 
 @login_required_my
 def folder_page(request, folder_name):
-
     try:
         todo_list = TodoFolders.objects.get(
             folder_title=folder_name, user=request.user).todo_list.all()
@@ -124,7 +122,6 @@ def create_example_user(request):
 
 
 def restore_mail(request):
-
     if request.method == 'POST' and request.POST.get('restoreCode'):
         r_email = request.POST.get('restoreEmail')
         r_code = request.POST.get('restoreCode')
@@ -151,7 +148,6 @@ def restore_mail(request):
 
     if request.method == 'POST' and '?code' not in request.build_absolute_uri():
         email_ = request.POST.get('email')
-        print(email_)
 
         try:
             user = CustomUser.objects.get(email=email_)
@@ -162,7 +158,6 @@ def restore_mail(request):
                 pr.restoreCode = code
                 pr.save()
             except Exception as e:
-                print(e)
                 # pr = PasswordRestore.objects.create(user=user, restoreCode=code)
                 pr = PasswordRestore(user=user, restoreCode=code)
                 pr.save()

@@ -1,180 +1,166 @@
-from django.shortcuts import render
-from django.http import JsonResponse
-from django.http import HttpResponse
-from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from core.models import Todo, TodoFolders
-from django.utils import timezone
-from .decorators import *
-from .serializers import *
+import datetime
+
 from django.db import IntegrityError
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter, extend_schema_view
+from rest_framework import viewsets, permissions, authentication, mixins, status
+from rest_framework.decorators import action
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
 
-# Create your views here.
-
-
-@api_view(["GET"])
-def get_routes(request):
-    """Returns rest_framework response with paths for api."""
-
-    routes = [
-        'GET /api',
-        'POST /api/add-post/',
-        'GET /api/edit_cb/<str:pk>/<true|false>',
-        'POST /api/add-post/',
-        'POST /api/add-post/',
-        # 'GET',
-    ]
-
-    return Response(routes)
+from core.models import Todo, TodoFolders
+from . import serializers as sz
+from .exceptions import BadRequest
 
 
-@login_required_api
-@api_view(["GET"])
-def user_todo_folder_list(request):
-    """Returns folder id, title and list of todo id's inside folder. Requires user."""
-    folders = FolderSerializer(
-        TodoFolders.objects.filter(user=request.user).all(), many=True)
-    return Response(folders.data)
+@extend_schema_view(
+    list=extend_schema(parameters=[
+        OpenApiParameter(name='completed', description="Filter complete/incomplete", type=bool),
+        OpenApiParameter(name='until', description="End date. Results with no end date will be hidden.",
+                         type=OpenApiTypes.DATETIME),
+    ])
+)
+@extend_schema(tags=["Todo"])
+class TodoViewSet(viewsets.ModelViewSet):
+    queryset = Todo.objects.all()
+    serializer_class = sz.TodoRetrieveSerializer
+    authentication_classes = (authentication.SessionAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    model = Todo
 
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return sz.TodoCreateSerializer
+        elif self.action in ['update', 'partial_update']:
+            return sz.TodoUpdateSerializer
 
-@login_required_api
-@api_view(["POST"])
-def add_todo(request):
-    """Creates todo. 
-    Requires user and title, datetime field optional"""
-    if request.POST.get("todoInput") != '':
+        return sz.TodoRetrieveSerializer
+
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    def get_queryset(self):
         try:
-            new_todo = Todo(user=request.user,
-                            title=request.POST.get("todoInput"))
-            if request.POST.get("date"):
-                new_todo.until = request.POST.get("date")
-                print(1, request.POST.get("date"))
-                print(2, new_todo.until)
-            new_todo.save()
-            return Response({"message": "Ok", "pk": new_todo.pk})
-        except Todo.DoesNotExist:
-            return Response({'message': "Not found."}, status=status.HTTP_404_NOT_FOUND)
+            query = self.request.query_params
+            filter_query = Q(user=self.request.user)
+            if "completed" in query:
+                raw = query["completed"].capitalize()
+                state = True if raw == "True" else False
+                filter_query &= Q(is_completed=state)
+            if "end_date" in query:
+                date = datetime.datetime.fromisoformat(query["end_date"])
+                filter_query &= Q(until__lt=date + datetime.timedelta(days=1),
+                                  until__gte=date)
+            return self.queryset.filter(filter_query)
+        except ValueError as ex:
+            if "Invalid isoformat string" in str(ex):
+                raise BadRequest("Bad datetime format", code=status.HTTP_400_BAD_REQUEST)
 
-    else:
-        return Response({'message': "Some fields empty."}, status=status.HTTP_400_BAD_REQUEST)
+    @extend_schema(
+        responses=serializer_class,
+        description="Title is required. Other fields can be provided optionally."
+    )
+    def create(self, request, *args, **kwargs):
+        serializer: sz.TodoCreateSerializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            folder = None
+            slug = serializer.validated_data.pop("slug", None)
+            if slug:
+                folder = get_object_or_404(TodoFolders, slug=slug, user_id=request.user.id)
 
+            instance = serializer.create(serializer.validated_data)
 
-@login_required_api
-@api_view(["POST"])
-def edit_todo(request):
-    """Edits todo.
-    Requires user, todo pk and new body from request"""
-    pk = request.POST.get('id')
-    body = request.POST.get("editTodo")
-    try:
-        todo_edit = Todo.objects.get(pk=pk, user=request.user)
-    except Todo.DoesNotExist:
-        return Response({'message': "Not found."}, status=status.HTTP_404_NOT_FOUND)
-    if body != todo_edit.title:
-        todo_edit.title = body
-        todo_edit.save()
-    return Response({"message": "Ok"})
+            if folder:
+                folder.todo_list.add(instance)
 
+            serializer = self.serializer_class(instance)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@login_required_api
-@api_view(["POST"])
-def create_todo_infolder(request, folder_name):
-    """Creates todo inside folder. 
-    Requires user and title, datetime field optional"""
-    try:
-        tf = TodoFolders.objects.get(
-            folder_title=folder_name, user=request.user)
-        if request.POST.get("todoInput") != '':
-            new_todo = Todo(user=request.user,
-                            title=request.POST.get("todoInput"))
-        else:
-            return Response({'message': "Some fields empty."}, status=status.HTTP_400_BAD_REQUEST)
-        if request.POST.get("date"):
-            new_todo.until = request.POST.get("date")
-        new_todo.save()
-        tf.todo_list.add(new_todo)
-        return Response({"message": "Ok", 'pk': new_todo.pk})
-    except TodoFolders.DoesNotExist:
-        return Response({'message': "Not found."}, status=status.HTTP_404_NOT_FOUND)
-
-
-@login_required_api
-@api_view(["GET"])
-def edit_cb(request, pk, bool_type):
-    """Change completed status. Required pk and true/false for changing. 
-    Does not trigger save function if status == status from request."""
-    try:
-        todo = Todo.objects.get(pk=pk, user=request.user)
-        state = True if bool_type == 'true' else False
-        if state != todo.completed:
-            todo.completed = state
-            todo.save()
-        return Response({"message": "Ok"})
-    except Todo.DoesNotExist:
-        return Response({'message': "Not found."}, status=status.HTTP_404_NOT_FOUND)
+    @extend_schema(request=sz.TodoChangeStateSerializer,
+                   parameters=[OpenApiParameter(name="id", type=OpenApiTypes.INT, location=OpenApiParameter.PATH,
+                                                description="ID")])
+    @action(detail=False, methods=['patch'], url_path=r'state/(?P<id>[^/]+)')
+    def change_state(self, request: Request, id):
+        """Change state of to-do"""
+        state = request.data.get("state")
+        if state is None or (bool(state) not in [True, False]):
+            return Response({"detail": "Param <state> should be valid boolean"}, status=status.HTTP_400_BAD_REQUEST)
+        state = bool(state)
+        instance: Todo = get_object_or_404(Todo, pk=id, user=request.user)
+        instance.change_state(state)
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
 
-@login_required_api
-@api_view(["POST"])
-def create_folder(request):
-    """Creates folder. Requires folder title and user."""
-    title = request.data.get("folderTitle")
-    if title == '':
-        return Response({'message': "Some fields empty."}, status=status.HTTP_400_BAD_REQUEST)
-    try:
-        nt = TodoFolders(user=request.user, folder_title=title)
-        nt.save()
-        return Response({"message": "Ok"})
-    except TodoFolders.DoesNotExist:
-        return Response({'message': "Not found."}, status=status.HTTP_404_NOT_FOUND)
-    except IntegrityError as e:
-        if "UNIQUE constraint failed" in str(e):
-            return Response({'message': "Folder title should be unique."}, status=status.HTTP_402_PAYMENT_REQUIRED)
+@extend_schema(tags=["Folders"])
+class FoldersViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin,
+                     viewsets.GenericViewSet):
+    queryset = TodoFolders.objects.all()
+    serializer_class = sz.FolderRetrieveSerializer
+    lookup_field = "slug"
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        query = self.request.query_params.keys()
+        filter_query = Q(user=self.request.user)
+
+        return self.queryset.filter(filter_query)
 
 
-@login_required_api
-@api_view(["GET"])
-def delete_folder(request, pk):
-    """Deletes folder. 
-    Requires user and pk."""
-    try:
-        f_td = TodoFolders.objects.get(user=request.user, pk=pk)
-        f_td.delete()
-        print(f'{f_td} deleted')
-        return Response({"message": "Ok"})
-    except TodoFolders.DoesNotExist:
-        return Response({'message': "Not found."}, status=status.HTTP_404_NOT_FOUND)
+@extend_schema(tags=["Folders"])
+class FolderManageViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin,
+                          GenericViewSet):
+    queryset = TodoFolders.objects.all()
+    serializer_class = sz.FolderSerializer
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = (permissions.IsAuthenticated,)
+    lookup_field = "slug"
+    http_method_names = ["post", "put", "patch", "delete"]
 
+    def get_queryset(self):
+        query = self.request.query_params.keys()
+        filter_query = Q(user=self.request.user)
 
-@login_required_api
-@api_view(["GET"])
-def delete_todo(request, pk):
-    """Deletes Todo.
-    Requires user and pk."""
-    try:
-        to_delete = Todo.objects.get(pk=pk, user=request.user)
-        to_delete.delete()
-        return Response({"message": "Ok"})
-    except Todo.DoesNotExist:
-        return Response({'message': "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        return self.queryset.filter(filter_query)
 
+    @extend_schema(request=sz.FolderSerializer)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                instance = TodoFolders.objects.create(user_id=request.user.id,
+                                                      folder_title=serializer.validated_data.get("folder_title"))
+                if serializer.validated_data.get("todo_list"):
+                    filtered_todos = [todo for todo in serializer.validated_data.get("todo_list")
+                                      if todo.user.id == request.user.id]
+                    instance.todo_list.add(*filtered_todos)
+                serializer = self.serializer_class(instance)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            except IntegrityError:
+                return Response({"detail": "Folder with this name already exists"}, status.HTTP_409_CONFLICT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@login_required_api
-@api_view(["GET"])
-def add_to_folder(request, folder_pk, todo_pk):
-    # TODO make js function which sends request using folder name?
-    """Adds Todo to folder.
-    Requires user and folder <NAME/PK>"""
-    print('tt')
-    try:
-        user = request.user
-        todo = Todo.objects.get(pk=todo_pk, user=user)
-        tf = TodoFolders.objects.get(pk=folder_pk, user=user)
-        tf.todo_list.add(todo)
-        # folder = TodoFolders.objects.get(pk=pk)
-        return Response({"message": "Ok"})
-    except Todo.DoesNotExist:
-        return Response({'message': "Todo not found."}, status=status.HTTP_404_NOT_FOUND)
-    except TodoFolders.DoesNotExist:
-        return Response({'message': "Todo Folder not found."}, status=status.HTTP_404_NOT_FOUND)
+    @extend_schema(operation_id="api_folder_todo_add", methods=["PUT"])
+    @extend_schema(operation_id="api_folder_todo_remove", methods=["DELETE"])
+    @extend_schema(request=None, responses=sz.FolderRetrieveSerializer,
+                   parameters=[OpenApiParameter(name="todo_id", type=OpenApiTypes.INT, location=OpenApiParameter.PATH,
+                                                description="Todo ID")])
+    @action(detail=True, methods=['put', "delete"],
+            url_path=r'(?P<todo_id>\d+)')
+    def manage_todo_in_folder(self, request, slug, todo_id):
+        if request.method == "PUT":
+            instance: TodoFolders = self.get_object()
+            todo = get_object_or_404(Todo, user_id=request.user.id, pk=todo_id)
+            instance.todo_list.add(todo)
+            return Response(sz.FolderRetrieveSerializer(instance).data)
+        elif request.method == "DELETE":
+            todo = get_object_or_404(Todo, user_id=request.user.id, pk=todo_id)
+            instance: TodoFolders = self.get_object()
+            instance.todo_list.remove(todo)
+            return Response(status=status.HTTP_204_NO_CONTENT)

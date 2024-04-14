@@ -16,7 +16,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -35,7 +34,6 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -50,6 +48,7 @@ INSTALLED_APPS = [
     'user',
     'notifications',
     'rest_framework',
+    'drf_spectacular'
 ]
 
 MIDDLEWARE = [
@@ -82,7 +81,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'todo.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -92,7 +90,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -111,7 +108,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -135,36 +131,24 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Default values for email and password
-EMAIL_SYSTEM_DEFAULTS = {
-    'EMAIL': 'example@example.com',
-    'PASSWORD': 'password123',
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10,
 }
-
-# Custom setting for email and app password from google
-EMAIL_SYSTEM = getattr(settings, 'EMAIL_SYSTEM', EMAIL_SYSTEM_DEFAULTS)
-
-# Retrieve email and password from environment variables if set
-EMAIL_SYSTEM['EMAIL'] = os.getenv('EMAIL_SYSTEM_EMAIL', EMAIL_SYSTEM['EMAIL'])
-EMAIL_SYSTEM['PASSWORD'] = os.getenv(
-    'EMAIL_SYSTEM_PASSWORD', EMAIL_SYSTEM['PASSWORD'])
-
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-
-EMAIL_HOST_USER = EMAIL_SYSTEM['EMAIL']
-EMAIL_HOST_PASSWORD = EMAIL_SYSTEM['PASSWORD']
-
-EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-email_system_password = os.environ.get('EMAIL_SYSTEM_PASSWORD')
-
-
+# Swagger
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Your Project API',
+    'DESCRIPTION': 'Your project description',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
