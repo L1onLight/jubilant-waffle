@@ -1,7 +1,9 @@
+import asyncio
+
 from django.shortcuts import render, get_object_or_404, redirect
 from user.forms import RegisterForm, CustomLoginForm
 from .models import Todo, TodoFolders
-from django.contrib.auth import logout
+from django.contrib.auth import logout, get_user_model
 from .decorators import *
 from django.contrib import messages
 from .models import CustomUser
@@ -13,7 +15,7 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 from django.contrib import auth
 import random
-from notifications.views import password_restore_email
+from notifications.views import send_password_restore_mail
 # Pagination
 from django.core.paginator import Paginator
 
@@ -34,7 +36,6 @@ def home(request):
     p = Paginator(todo_list, PAGINATION_N)
     page = request.GET.get('page')
     todo_list = p.get_page(page)
-    print(p.count)
     context = {'todo_list': todo_list, "todo_folders": todo_folders, "paginator": p,
                'pn': PAGINATION_N}
     return render(request, 'core/index.html', context)
@@ -42,7 +43,6 @@ def home(request):
 
 @login_required_my
 def folder_page(request, folder_name):
-
     try:
         todo_list = TodoFolders.objects.get(
             folder_title=folder_name, user=request.user).todo_list.all()
@@ -71,10 +71,7 @@ def log_in(request, fool=None):
                 password = formR.cleaned_data.get('password')
                 password1 = formR.cleaned_data.get('password_rep')
                 if password == password1:
-
-                    user = formR.save(commit=False)
-                    user.password = make_password(password)
-                    user.save()
+                    user = get_user_model().objects.create_user(email=formR.data.get("email"), password=password)
                     login(request, user,
                           backend='django.contrib.auth.backends.ModelBackend')
                     return redirect('home')
@@ -124,7 +121,6 @@ def create_example_user(request):
 
 
 def restore_mail(request):
-
     if request.method == 'POST' and request.POST.get('restoreCode'):
         r_email = request.POST.get('restoreEmail')
         r_code = request.POST.get('restoreCode')
@@ -141,7 +137,7 @@ def restore_mail(request):
                     user = CustomUser.objects.get(email=r_email)
                     user.password = make_password(r_password)
                     user.save()
-                    auth.login(request, user=user)
+                    auth.login(request, user=user, backend='django.contrib.auth.backends.ModelBackend')
                     return redirect('home')
                 else:
                     messages.error(request, 'Wrong code.')
@@ -151,7 +147,6 @@ def restore_mail(request):
 
     if request.method == 'POST' and '?code' not in request.build_absolute_uri():
         email_ = request.POST.get('email')
-        print(email_)
 
         try:
             user = CustomUser.objects.get(email=email_)
@@ -162,7 +157,6 @@ def restore_mail(request):
                 pr.restoreCode = code
                 pr.save()
             except Exception as e:
-                print(e)
                 # pr = PasswordRestore.objects.create(user=user, restoreCode=code)
                 pr = PasswordRestore(user=user, restoreCode=code)
                 pr.save()
@@ -170,8 +164,7 @@ def restore_mail(request):
             # pr.restoreCode = code
             # pr.save()
             print(f"Code: {code}")
-            password_restore_email(
-                request, receiver_email=email_, code=code, url=request.build_absolute_uri('?code'))
+            send_password_restore_mail(receiver_email=email_, code=code, url=request.build_absolute_uri('?code'))
 
             # p_restore(email_, code)
             messages.success(request, 'Check your email.')

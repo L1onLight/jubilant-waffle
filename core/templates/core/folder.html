@@ -1,7 +1,7 @@
 {% extends "main.html" %}
 {% block content %}
     {% load static %}
-    <input type="hidden" id="foldersHidden" />
+    <input type="hidden" id="foldersHidden"/>
     <section class="container main-container mt-2 mb-3 shadow position-relative">
         <button class="m-btn position-relative" id="filterBtn">
             Filter
@@ -19,7 +19,7 @@
             <input type="text"
                    class="input-f"
                    id="filterInputTasks"
-                   placeholder="Filter tasks" />
+                   placeholder="Filter tasks"/>
         </section>
     </section>
     <section class="container main-container mt-2 mb-3 shadow position-relative"
@@ -37,11 +37,12 @@
             <input type="text"
                    class="input-f"
                    id="filterInputMob"
-                   placeholder="Filter folders" />
+                   placeholder="Filter folders"/>
             <section class="diff-links-section-mob" id="divContainerMob">
                 {% for folder in  todo_folders %}
                     <div class="position-relative">
-                        <a href="{% url 'folder_page' folder_name=folder %}" id="folder_{{folder.id}}" class="filterItem">{{ folder }}</a>
+                        <a href="{% url 'folder_page' folder_name=folder %}" id="folder_{{ folder.id }}"
+                           class="filterItem">{{ folder }}</a>
                         <div class="removeFolder"><i class="fa-solid fa-xmark"></i></div>
                     </div>
                 {% endfor %}
@@ -51,7 +52,7 @@
                        id="folderCreateInput"
                        name="folderTitle"
                        class="input-f"
-                       placeholder="Create Folder" />
+                       placeholder="Create Folder"/>
                 <button id="addFolderBtn" onclick="addFolderFunction(this)">Add</button>
             </div>
         </section>
@@ -72,33 +73,34 @@
                     <input type="text"
                            class="input-f"
                            id="filterInput"
-                           placeholder="Filter folders" />
+                           placeholder="Filter folders"/>
                     <section class="diff-links-section" id="divContainer">
                         {% for folder in  todo_folders %}
-                        <div class="position-relative">
-                           <a href="{% url 'folder_page' folder_name=folder %}" id="folder_{{folder.id}}" class="filterItem">{{ folder }}</a>
-                           <div class="removeFolder"><i class="fa-solid fa-xmark"></i></div>
-                       </div>
-                       {% endfor %}
+                            <div class="position-relative">
+                                <a href="{% url 'folder_page' folder_name=folder %}" id="folder_{{ folder.id }}"
+                                   class="filterItem">{{ folder }}</a>
+                                <div class="removeFolder"><i class="fa-solid fa-xmark"></i></div>
+                            </div>
+                        {% endfor %}
                     </section>
                     <div id="linkContainer">
                         <input type="text"
                                class="input-f"
                                name="folderTitle"
                                id="folderCreateInput2"
-                               placeholder="Create Folder" />
+                               placeholder="Create Folder"/>
                         <button id="addFolderBtn2" onclick="addFolderFunction(this)" disabled>Add</button>
-                        <input type="hidden" id="hFolderInput" />
+                        <input type="hidden" id="hFolderInput"/>
                     </div>
                 </section>
             </div>
         </div>
-        <h3 class="text-center mb-4">{{folder_name}} plans</h3>
-        <form action="{% url 'addTodoInfolder' folder_name=folder_name %}" method="POST" id="addTodoForm">
+        <h3 class="text-center mb-4">{{ folder_name }} plans</h3>
+        <form action="{% url 'addTodoInFolder' folder_name=folder_name %}" method="POST" id="addTodoForm">
             {% csrf_token %}
             <div class="todo-add">
-                <input type="text" name="todoInput" class="todo-add-text" required />
-                <br />
+                <input type="text" name="todoInput" class="todo-add-text" required/>
+                <br/>
                 <div class="mob-flex">
                     <input type="datetime-local"
                            id="dtLoc"
@@ -106,9 +108,9 @@
                            value=""
                            min=""
                            class="todo-add-datetime"
-                           style="display: none" />
+                           style="display: none"/>
                     <button class="todo-add-datetime specBtn" style="display: ">Set Until Date</button>
-                    <input type="submit" value="Add" class="todo-add-submit" />
+                    <input type="submit" value="Add" class="todo-add-submit"/>
                 </div>
             </div>
         </form>
@@ -119,42 +121,43 @@
                         <div class="testo">
                             <form action="/api/edit-cb/{{ todo.id }}" method="POST">
                                 {% csrf_token %}
-                                <input type="checkbox"  onclick="checkbox(this)" name="cb" value="{{ todo.id }}" id="{{ todo.id }}" {% if todo.completed  %}checked{%  endif %}/>
-                                    <label for="{{ todo.id }}">Completed</label>
-                                </form>
-                                {% if todo.until %}
-                                    <div class="until-div">
-                                        <button class="position-relative" onclick="untilDropdown(this)">
-                                            Until<i class="fa-solid fa-caret-down mx-2"></i>
-                                        </button>
-                                        <div class="todo-until shadow" style="display: none">
-                                            {{ todo.until_date }}
-                                            <br />
-                                            {{ todo.until_time }}
-                                        </div>
-                                    </div>
-                                {% endif %}
-                                <div class="{{todo.id}}">
-                                    <button class="btn-dr" onclick="untilDropdown(this)">
-                                        <i class="fa-solid fa-ellipsis-vertical fa-lg"></i>
+                                <input type="checkbox" onclick="checkbox(this)" name="cb" value="{{ todo.id }}"
+                                       id="{{ todo.id }}" {% if todo.completed %}checked{% endif %}/>
+                                <label for="{{ todo.id }}">Completed</label>
+                            </form>
+                            {% if todo.until %}
+                                <div class="until-div">
+                                    <button class="position-relative" onclick="untilDropdown(this)">
+                                        Until<i class="fa-solid fa-caret-down mx-2"></i>
                                     </button>
-                                    <div class="options shadow" style="display: none">
-                                        <span onclick="editTodo(this, {{todo.id}})"><a id="editBtn" >Edit</a></span>
-                                        <span onclick="fetchFolders({{todo.id}})"><a id="addToFolderBtn">Add to Folder</a></span>
-                                        <span onclick="toDelete(this, {{todo.id}})"><a id="deleteBtn">Delete</a></span>
+                                    <div class="todo-until shadow" style="display: none">
+                                        {{ todo.until_date }}
+                                        <br/>
+                                        {{ todo.until_time }}
                                     </div>
                                 </div>
+                            {% endif %}
+                            <div class="{{ todo.id }}">
+                                <button class="btn-dr" onclick="untilDropdown(this)">
+                                    <i class="fa-solid fa-ellipsis-vertical fa-lg"></i>
+                                </button>
+                                <div class="options shadow" style="display: none">
+                                    <span onclick="editTodo(this, {{ todo.id }})"><a id="editBtn">Edit</a></span>
+                                    <span onclick="fetchFolders({{ todo.id }})"><a id="addToFolderBtn">Add to Folder</a></span>
+                                    <span onclick="toDelete(this, {{ todo.id }})"><a id="deleteBtn">Delete</a></span>
+                                </div>
                             </div>
-                            <p class="my-auto">{{ todo.title }}</p>
                         </div>
-                    {% endfor %}
-                </section>
+                        <p class="my-auto">{{ todo.title }}</p>
+                    </div>
+                {% endfor %}
             </section>
         </section>
-<script src="{% static 'js/main.js' %}"></script>
+    </section>
+    <script src="{% static 'js/main.js' %}" type="module"></script>
 
 
-{% comment %} <form action="" method="POST">
+    {% comment %} <form action="" method="POST">
     {% csrf_token %}
     <div class="editTodoContainer">
         <div class="textTodoContainer">

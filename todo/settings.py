@@ -13,9 +13,12 @@ from django.conf import settings
 import os.path
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -27,14 +30,16 @@ SECRET_KEY = 'django-insecure-vrhix2n6=6ha006i)q94-td+-u5__y$$@f2m-%cfic080x&c@m
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
+CORS_ORIGIN_WHITELIST = [
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+]
 AUTH_USER_MODEL = 'user.CustomUser'
 
 AUTHENTICATION_BACKENDS = [
     'user.backends.EmailOrUsernameModelBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
-
 
 # Application definition
 
@@ -45,14 +50,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'core',
     'api',
     'user',
     'notifications',
     'rest_framework',
+    'drf_spectacular'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -82,7 +90,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'todo.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -92,7 +99,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -111,7 +117,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -135,36 +140,37 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Default values for email and password
-EMAIL_SYSTEM_DEFAULTS = {
-    'EMAIL': 'example@example.com',
-    'PASSWORD': 'password123',
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10,
+}
+# Swagger
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Your Project API',
+    'DESCRIPTION': 'Your project description',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
 }
 
-# Custom setting for email and app password from google
-EMAIL_SYSTEM = getattr(settings, 'EMAIL_SYSTEM', EMAIL_SYSTEM_DEFAULTS)
-
-# Retrieve email and password from environment variables if set
-EMAIL_SYSTEM['EMAIL'] = os.getenv('EMAIL_SYSTEM_EMAIL', EMAIL_SYSTEM['EMAIL'])
-EMAIL_SYSTEM['PASSWORD'] = os.getenv(
-    'EMAIL_SYSTEM_PASSWORD', EMAIL_SYSTEM['PASSWORD'])
-
-
+# # # Email settings
+# Don't change
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
+EMAIL_USE_TLS = True  # Or False if your SMTP server doesn't use TLS
+#
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "example@mail.com")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "examplepass")
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER  # The default email address to use for sending emails
 
-EMAIL_HOST_USER = EMAIL_SYSTEM['EMAIL']
-EMAIL_HOST_PASSWORD = EMAIL_SYSTEM['PASSWORD']
-
-EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-email_system_password = os.environ.get('EMAIL_SYSTEM_PASSWORD')
-
-
+TOKEN_ALGORITHM = os.getenv("TOKEN_ALGORITHM")
