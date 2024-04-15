@@ -1,7 +1,9 @@
+import asyncio
+
 from django.shortcuts import render, get_object_or_404, redirect
 from user.forms import RegisterForm, CustomLoginForm
 from .models import Todo, TodoFolders
-from django.contrib.auth import logout
+from django.contrib.auth import logout, get_user_model
 from .decorators import *
 from django.contrib import messages
 from .models import CustomUser
@@ -13,7 +15,7 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 from django.contrib import auth
 import random
-from notifications.views import password_restore_email
+from notifications.views import send_password_restore_mail
 # Pagination
 from django.core.paginator import Paginator
 
@@ -69,10 +71,7 @@ def log_in(request, fool=None):
                 password = formR.cleaned_data.get('password')
                 password1 = formR.cleaned_data.get('password_rep')
                 if password == password1:
-
-                    user = formR.save(commit=False)
-                    user.password = make_password(password)
-                    user.save()
+                    user = get_user_model().objects.create_user(email=formR.data.get("email"), password=password)
                     login(request, user,
                           backend='django.contrib.auth.backends.ModelBackend')
                     return redirect('home')
@@ -138,7 +137,7 @@ def restore_mail(request):
                     user = CustomUser.objects.get(email=r_email)
                     user.password = make_password(r_password)
                     user.save()
-                    auth.login(request, user=user)
+                    auth.login(request, user=user, backend='django.contrib.auth.backends.ModelBackend')
                     return redirect('home')
                 else:
                     messages.error(request, 'Wrong code.')
@@ -165,8 +164,7 @@ def restore_mail(request):
             # pr.restoreCode = code
             # pr.save()
             print(f"Code: {code}")
-            password_restore_email(
-                request, receiver_email=email_, code=code, url=request.build_absolute_uri('?code'))
+            send_password_restore_mail(receiver_email=email_, code=code, url=request.build_absolute_uri('?code'))
 
             # p_restore(email_, code)
             messages.success(request, 'Check your email.')

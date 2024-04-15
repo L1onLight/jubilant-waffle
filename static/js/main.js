@@ -98,7 +98,8 @@ try {
         input1.value = sharedValue;
         inputH.value = sharedValue;
     });
-} catch {}
+} catch {
+}
 
 if (document.getElementById("foldersHidden")) {
     // const filterInput = document.getElementById("filterInput");
@@ -454,6 +455,7 @@ try {
         hFolderInput.value = sharedValueF;
         checkInput();
     });
+
     function checkInput() {
         if (hFolderInput.value === "") {
             inp.nextElementSibling.disabled = true;
@@ -463,7 +465,8 @@ try {
             inp2.nextElementSibling.disabled = false;
         }
     }
-} catch {}
+} catch {
+}
 
 function removeHiddenInput() {
     const inp = document.getElementById("folderCreateInput");
@@ -642,6 +645,7 @@ async function fetchFolders(todoId) {
     const folderIds = jsonData.map((item) => item.id);
     createFolderDiv(folderTitles, folderIds, todoId);
 }
+
 function addToFolderRequest(span, todoId, folderId) {
     const addToFolderUrl = `/api/add-to-folder/${folderId}/${todoId}/`;
     fetch(addToFolderUrl, {

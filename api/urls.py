@@ -1,4 +1,5 @@
 from django.urls import path, include
+from drf_spectacular.utils import extend_schema_view
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from rest_framework.routers import DefaultRouter
 
@@ -17,3 +18,5 @@ urlpatterns = [
     path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 
 ]
+
+# print(router.urls)

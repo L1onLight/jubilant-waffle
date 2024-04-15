@@ -27,7 +27,7 @@ from .exceptions import BadRequest
 class TodoViewSet(viewsets.ModelViewSet):
     queryset = Todo.objects.all()
     serializer_class = sz.TodoRetrieveSerializer
-    authentication_classes = (authentication.SessionAuthentication,)
+    authentication_classes = (authentication.SessionAuthentication, authentication.BasicAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
     model = Todo
 
@@ -103,7 +103,7 @@ class FoldersViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin,
     queryset = TodoFolders.objects.all()
     serializer_class = sz.FolderRetrieveSerializer
     lookup_field = "slug"
-    authentication_classes = [authentication.SessionAuthentication]
+    authentication_classes = (authentication.SessionAuthentication, authentication.BasicAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
@@ -118,7 +118,7 @@ class FolderManageViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixi
                           GenericViewSet):
     queryset = TodoFolders.objects.all()
     serializer_class = sz.FolderSerializer
-    authentication_classes = [authentication.SessionAuthentication]
+    authentication_classes = (authentication.SessionAuthentication, authentication.BasicAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
     lookup_field = "slug"
     http_method_names = ["post", "put", "patch", "delete"]
