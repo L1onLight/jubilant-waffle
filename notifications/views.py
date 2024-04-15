@@ -59,6 +59,7 @@ def send_password_restore_mail(receiver_email, code, url):
 
 
 @extend_schema(
+    tags=["Notifications"],
     request=RestoreEmailSerializer,
     responses={200: {}},
     methods=["POST"]
@@ -78,6 +79,7 @@ def restore_mail(request: Request):
 
 
 @extend_schema(
+    tags=["Notifications"],
     request=TokenSerializer,
     responses={200: {}},
     methods=["POST"]
