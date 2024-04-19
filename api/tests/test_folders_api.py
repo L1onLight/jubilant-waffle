@@ -1,4 +1,3 @@
-import datetime
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -6,7 +5,6 @@ from rest_framework.test import APIClient
 
 from api.tests.conftest import create_test_user, create_test_folder, create_test_todo
 from core.models import TodoFolders, Todo
-from django.urls import get_resolver
 
 FOLDER_MANAGE_URL = reverse("folder_manage-list")
 FOLDER_RETRIEVE_URL = reverse("folder_retrieve-list")

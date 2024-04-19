@@ -1,25 +1,24 @@
-import asyncio
-
-from django.shortcuts import render, get_object_or_404, redirect
-from user.forms import RegisterForm, CustomLoginForm
-from .models import Todo, TodoFolders
-from django.contrib.auth import logout, get_user_model
-from .decorators import *
-from django.contrib import messages
-from .models import CustomUser
-from django.http import QueryDict
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.hashers import make_password
-from notifications.models import PasswordRestore
-from django.utils import timezone
-from datetime import datetime, timedelta
-from django.contrib import auth
 import random
-from notifications.views import send_password_restore_mail
+from datetime import timedelta
+
+from django.contrib import auth
+from django.contrib import messages
+from django.contrib.auth import authenticate, login
+from django.contrib.auth import logout, get_user_model
+from django.contrib.auth.hashers import make_password
 # Pagination
 from django.core.paginator import Paginator
+from django.db import IntegrityError
+from django.shortcuts import render, get_object_or_404
+from django.utils import timezone
 
-# Create your views here.
+from notifications.models import PasswordRestore
+from notifications.views import send_password_restore_mail
+from user.forms import RegisterForm, CustomLoginForm
+from .decorators import *
+from .models import CustomUser
+from .models import Todo, TodoFolders
+
 PAGINATION_N = 7
 
 
@@ -115,7 +114,7 @@ def create_example_user(request):
         new_user = CustomUser(email="example@gmail.com",
                               username="Useriko", password=make_password("qwerty123"))
         new_user.save()
-    except Exception:
+    except IntegrityError:
         pass
     return redirect('home')
 
@@ -148,29 +147,18 @@ def restore_mail(request):
     if request.method == 'POST' and '?code' not in request.build_absolute_uri():
         email_ = request.POST.get('email')
 
-        try:
-            user = CustomUser.objects.get(email=email_)
-            code = random.randrange(1000000, 10000000)
+        user = get_object_or_404(get_user_model(), email=email_)
+        code = random.randrange(1000000, 10000000)
 
-            try:
-                pr = PasswordRestore.objects.get(user=user)
-                pr.restoreCode = code
-                pr.save()
-            except Exception as e:
-                # pr = PasswordRestore.objects.create(user=user, restoreCode=code)
-                pr = PasswordRestore(user=user, restoreCode=code)
-                pr.save()
-            # pr, created = PasswordRestore.objects.get_or_create(user=user)
-            # pr.restoreCode = code
-            # pr.save()
-            print(f"Code: {code}")
-            send_password_restore_mail(receiver_email=email_, code=code, url=request.build_absolute_uri('?code'))
+        pr = PasswordRestore.objects.filter(user=user).first()
+        if not pr:
+            pr = PasswordRestore(user=user)
+        pr.restoreCode = code
+        pr.save()
 
-            # p_restore(email_, code)
-            messages.success(request, 'Check your email.')
+        print(f"Code: {code}")
+        send_password_restore_mail(receiver_email=email_, code=code, url=request.build_absolute_uri('?code'))
 
-        except CustomUser.DoesNotExist:
-            # Here you can change error message to check your email if
-            # you want to hide information about email from user.
-            messages.error(request, 'User does not exist.')
+        messages.success(request, 'Check your email.')
+
     return render(request, 'core/password_restore.html')

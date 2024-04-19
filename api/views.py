@@ -77,8 +77,8 @@ class TodoViewSet(viewsets.ModelViewSet):
                 folder.todo_list.add(instance)
 
             serializer = self.serializer_class(instance)
-            headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+            # headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @extend_schema(request=sz.TodoChangeStateSerializer,
@@ -124,7 +124,7 @@ class FolderManageViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixi
     http_method_names = ["post", "put", "patch", "delete"]
 
     def get_queryset(self):
-        query = self.request.query_params.keys()
+        # query = self.request.query_params.keys()
         filter_query = Q(user=self.request.user)
 
         return self.queryset.filter(filter_query)

@@ -1,17 +1,12 @@
 import datetime
-from pprint import pprint
 
-import django.conf.global_settings
-from django.conf import settings
 from django.test import TestCase
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.reverse import reverse
-
 from rest_framework.test import APIClient
-from django.contrib.auth import get_user_model
-from django.contrib.auth.hashers import make_password
-from api.tests.conftest import create_test_user, create_test_todo, TIME_ZONE, assert_time, format_time
+
+from api.tests.conftest import create_test_user, create_test_todo, assert_time, format_time
 from core.models import Todo
 
 TODO_URL = reverse("todo-list")
